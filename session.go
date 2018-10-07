@@ -54,7 +54,10 @@ func (s *Session) GetAuthURL() (string, error) {
 
 // Authorize validates the session with CAS and return the access token to be stored for future use.
 func (s *Session) Authorize(provider goth.Provider, params goth.Params) (string, error) {
-	p := provider.(*Provider)
+	p, ok := provider.(*Provider)
+	if !ok {
+		return "", errors.New("provider is not a CAS provider")
+	}
 	ticket := params.Get("ticket")
 	url := ValidateURL + "?service=" + url.QueryEscape(p.CallbackURL) + "&ticket=" + ticket
 
